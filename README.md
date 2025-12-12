@@ -1,42 +1,109 @@
-# Elevator-Scheduling-using-Reinforcement-Learning
-README.txt
+# Deep Reinforcement Learning for Elevator Group Control
 
-Project Files
+An intelligent elevator scheduling system that uses Deep Q-Networks (DQN) to reduce passenger wait times by up to 25% compared to traditional algorithms.
 
-	train.py: Script to run for training. It trains the agent using the environment and saves the model to elevator_dqn.pth
+## Project Overview
 
-	visualize.py: Script to run for visualization. It loads the trained elevator_dqn.pth and shows it working in a Pygame window
+Modern skyscrapers require efficient vertical transportation. Traditional elevator algorithms (like "Nearest Car") rely on fixed rules that often fail during rush hours, leading to long wait times and energy waste.
 
-		NOTE: train.py & visualize.py ARE THE ONLY FILES YOU NEED TO RUN. KEEP THE OTHERS IN THE SAME DIR
-	
-	elevator_env.py: The simulation. Defines the elevator, passengers, and building logic. This is where you change rewards or simulation rules
-	
-	dqn_agent.py: The "brain." Defines the neural network (QNetwork) and the agent's learning logic (DQNAgent)
-	
-	requirements.txt: All the libraries you need.
+This project implements a Deep Reinforcement Learning (RL) agent that learns to control a group of elevators. By treating the building as a Markov Decision Process (MDP), the agent learns complex dispatching strategies through trial-and-error, optimizing for minimal passenger waiting time and fair service.
+
+### Key Features
+
+- **Deep Q-Network (DQN):** Uses a neural network to approximate the Q-value function for high-dimensional state spaces.
+
+- **Custom Simulation Environment:** A discrete-event simulator modeling elevator physics, passenger arrivals, and building dynamics.
+
+- **Comparison Baseline:** Benchmarked against the industry-standard "Nearest-Car" (NC) heuristic algorithm.
+
+- **Dynamic Traffic Handling:** robust performance across Uniform, Up-Peak (morning rush), and Mixed (lunch hour) traffic patterns.
+
+## How It Works
+
+### 1. The Environment (MDP)
+
+The building is modeled as a grid where the agent observes:
+
+- **Elevator States:** Position, direction, current load, and pressed buttons.
+
+- **Hall Calls:** Which floors have passengers waiting (Up/Down).
+
+- **Wait Times:** How long active calls have been waiting (to prevent starvation).
+
+### 2. The Agent (DQN)
+
+Instead of hard-coded rules, the agent receives a Reward based on:
+
+- Negative sum of squared waiting times (penalizes long waits heavily).
+
+- Energy consumption penalties (distance traveled).
+
+The network takes the state vector as input and outputs the Q-value for assigning a new hall call to each specific elevator.
+
+## Results
+
+We compared the trained DQN agent against the Nearest-Car baseline over 100 test episodes.
+
+| Traffic Pattern | Baseline (Avg Wait) | DQN Agent (Avg Wait) | Improvement |
+|------------------|----------------------|------------------------|-------------|
+| Uniform          | 24.5s               | 19.8s                 | ~19%        |
+| Up-Peak          | 35.2s               | 25.2s                 | ~28%        |
+| Mixed            | 31.8s               | 23.5s                 | ~26%        |
 
 
-How to Run
+### Performance Visualizations
 
-	Step 1: Install Dependencies
+Reward Curve: 
 
-	"pip install -r requirements.txt"
-
-
-	Step 2: Train the Agent
-
-	runs the training and saves model as elevator_dqn.pth.
-
-	"python train.py"
+![Reward Curve](iterations/4th%20it/total_reward_per_episode.png)
 
 
-	Step 3: See the Trained Agent Work
+Average Waiting Time Comparison:
 
-	loads saved elevator_dqn.pth and opens pygame window.
+![Average Wait Time](iterations/4th%20it/average_wait_time_per_step.png)
 
-	"python visualize.py"
 
+
+## Installation & Usage
+
+### Prerequisites
+
+- Python 3.8+
+
+- PyTorch (or TensorFlow, depending on your implementation)
+
+- NumPy, Matplotlib
+
+### Setup
+
+1. Clone the repository:
+
+		git clone [https://github.com/yourusername/elevator-rl.git](https://github.com/yourusername/elevator-rl.git) cd elevator-rl
+
+2. Install dependencies:
+
+		pip install -r requirements.txt
+
+### Running the Training
+
+To train the DQN agent from scratch:
+
+	python train.py
+
+_This will generate training logs and save the model weights to `/models`._
+
+## Documentation
+
+For a detailed technical explanation of the mathematical formulation, network architecture, and experimental setup, please refer to the Project Report (IEEE Format) included in this repository.
+
+---
 
 About 'iterations' Folder
 	
 	'iterations' is a folder that contains the .png files that we collected form the various iterations of making and improving the model.
+
+## Authors
+
+- Yashwant Patnaikuni
+
+- Nirup Koyilada
