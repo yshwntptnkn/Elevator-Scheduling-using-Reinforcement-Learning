@@ -1,5 +1,0 @@
-changes:
-
-elevator_env
-
-	reward -= (p.wait_time ** 2) * 0.01 --->  reward -= (p.wait_time ** 2) * 0.0001

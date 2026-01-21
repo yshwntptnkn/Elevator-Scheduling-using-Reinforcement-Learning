@@ -1,9 +1,0 @@
-changes:
-
-elevator_env
-
-	for floor_queue in self.waiting_passengers:
-            	for p in floor_queue:
-                	p.wait_time += 1
-                	reward -= STATE_WAIT_TIME
-                [ADDED] reward -= (p.wait_time ** 2) * 0.01 #squared pen
