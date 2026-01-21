@@ -2,8 +2,9 @@ import pygame
 import sys
 import torch
 import numpy as np
-from elevator_env import ElevatorEnv  # Import your environment
-from dqn_agent import DQNAgent        # Import your agent
+import src.config
+from src.elevator_env import ElevatorEnv  # Import your environment
+from src.dqn_agent import DQNAgent        # Import your agent
 import os
 
 # --- 1. Setup ---
@@ -11,14 +12,10 @@ pygame.init()
 pygame.font.init()
 
 # --- 2. Constants ---
-NUM_FLOORS = 10
-FLOOR_HEIGHT = 60
-SCREEN_HEIGHT = NUM_FLOORS * FLOOR_HEIGHT
-
-SCREEN_WIDTH = 800
+SCREEN_HEIGHT = config.NUM_FLOORS * config.FLOOR_HEIGHT
 BUILDING_PANEL_WIDTH = 350
 ELEVATOR_SHAFT_WIDTH = 100
-INFO_PANEL_WIDTH = SCREEN_WIDTH - BUILDING_PANEL_WIDTH
+INFO_PANEL_WIDTH = config.SCREEN_WIDTH - config.BUILDING_PANEL_WIDTH
 
 # Colors
 COLORS = {
@@ -181,14 +178,32 @@ def draw_info_panel(surface, env, action_str, total_steps, avg_wait_time, avg_ri
 # --- 4. Main Execution ---
 def main():
     # --- Initialize Env and Agent ---
-    env = ElevatorEnv(num_floors=NUM_FLOORS)
+    env = ElevatorEnv(num_floors=config.NUM_FLOORS)
     state_size = env.get_state().shape[0]
     action_size = 3
     
     agent = DQNAgent(state_size=state_size, action_size=action_size)
     
     # --- Load the TRAINED Model ---
-    model_load_path = "elevator_dqn.pth" # <-- Changed
+    possible_paths = [
+        os.path.join("models", "elevator_dqn.pth"), # Priority: clean models folder
+        "elevator_dqn.pth",                         # Fallback: root directory
+        os.path.join(os.path.dirname(__file__), "models", "elevator_dqn.pth") # Absolute path safety
+    ]
+    model_load_path = None
+    for path in possible_paths:
+    if os.path.exists(path):
+        model_load_path = path
+        break
+
+    if model_load_path is None:
+        print("\n❌ ERROR: Could not find model file 'elevator_dqn.pth'.")
+        print(f"   Checked locations: {', '.join(possible_paths)}")
+        print("   Please run 'train.py' first to generate the model file.\n")
+        sys.exit()
+
+    print(f"✅ Loading model from: {model_load_path}")
+    
     try:
         # Load model, mapping to CPU (works for both CPU and GPU-trained models)
         agent.q_network.load_state_dict(torch.load(model_load_path, map_location=torch.device('cpu')))
@@ -204,7 +219,7 @@ def main():
     print(f"Loaded model from '{model_load_path}'. Starting visualization...")
 
     # --- Initialize Pygame ---
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((config.SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Elevator Scheduling Visualization")
     clock = pygame.time.Clock()
 
@@ -266,4 +281,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
