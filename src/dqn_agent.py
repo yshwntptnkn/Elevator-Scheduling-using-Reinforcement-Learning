@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 import random
+import config
 from collections import deque
 
 # --- Hyperparameters ---
@@ -62,7 +63,7 @@ class DQNAgent:
     def __init__(self, state_size, action_size):
         self.state_size = state_size
         self.action_size = action_size
-        self.epsilon = EPSILON_START
+        self.epsilon = config.EPSILON_START
         
         # --- Q-Network Initialization ---
         # Main network (gets trained)
@@ -71,10 +72,10 @@ class DQNAgent:
         self.target_network = QNetwork(state_size, action_size)
         self.target_network.load_state_dict(self.q_network.state_dict()) # Sync them
         
-        self.optimizer = optim.Adam(self.q_network.parameters(), lr=LR)
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=config.LR)
         
         # --- Replay Memory ---
-        self.memory = ReplayBuffer(BUFFER_SIZE, BATCH_SIZE)
+        self.memory = ReplayBuffer(config.BUFFER_SIZE, config.BATCH_SIZE)
         
         # --- Loss Function ---
         self.criterion = nn.MSELoss() # Mean Squared Error Loss
@@ -136,7 +137,7 @@ class DQNAgent:
     def end_of_episode(self, episode_num):
         """Called at the end of each episode."""
         # Decay epsilon (exploration)
-        self.epsilon = max(EPSILON_END, EPSILON_DECAY * self.epsilon)
+        self.epsilon = max(config.EPSILON_END, config.EPSILON_DECAY * self.epsilon)
         
         # Update the target network
         if episode_num % TARGET_UPDATE == 0:
@@ -146,3 +147,4 @@ class DQNAgent:
     def save(self, filename):
         """Saves the trained network."""
         torch.save(self.q_network.state_dict(), filename)    
+
