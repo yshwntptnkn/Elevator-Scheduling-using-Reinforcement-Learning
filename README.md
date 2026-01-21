@@ -55,12 +55,12 @@ We compared the trained DQN agent against the Nearest-Car baseline over 100 test
 
 Reward Curve: 
 
-![Reward Curve](iterations/4th%20it/total_reward_per_episode.png)
+![Reward Curve](assets/total_reward_per_episode.png)
 
 
 Average Waiting Time Comparison:
 
-![Average Wait Time](iterations/4th%20it/average_wait_time_per_step.png)
+![Average Wait Time](assets/average_wait_time_per_step.png)
 
 
 
