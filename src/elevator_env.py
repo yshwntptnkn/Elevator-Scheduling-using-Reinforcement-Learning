@@ -1,13 +1,7 @@
 import random
 import numpy as np
+from src import config
 from collections import deque
-
-# --- Configuration ---
-STATE_WAIT_TIME = 1.0   # Time penalty for passengers waiting
-STATE_RIDE_TIME = 0.2   # Time penalty for passengers riding
-STATE_MOVE_PENALTY = 0.75  # Flat penalty for any elevator movement (energy)
-STATE_WRONG_DIR_PENALTY = 10 # Heavy penalty for moving opposite to a request
-STATE_DROPOFF_REWARD = 20 # Big reward for dropping someone off
 
 class Passenger:
     """A simple class for a passenger."""
@@ -139,11 +133,11 @@ class ElevatorEnv:
             self.elevator.direction = -1
             if self.elevator.current_floor > 0:
                 self.elevator.current_floor -= 1
-            reward -= STATE_MOVE_PENALTY
+            reward -= config.STATE_MOVE_PENALTY
             # Penalize moving wrong way
             if self.calls_up[self.elevator.current_floor] or \
                any(p.get_direction() == 1 for p in self.elevator.passengers):
-                reward -= STATE_WRONG_DIR_PENALTY
+                reward -= config.STATE_WRONG_DIR_PENALTY
 
         elif action == 1: # Stop and Load/Unload
             self.elevator.direction = 0 # Set to idle
@@ -152,7 +146,7 @@ class ElevatorEnv:
             unloaded_passengers = []
             for p in self.elevator.passengers:
                 if p.dest_floor == self.elevator.current_floor:
-                    reward += STATE_DROPOFF_REWARD # Big reward!
+                    reward += config.STATE_DROPOFF_REWARD # Big reward!
                     self.passengers_delivered += 1
                 else:
                     unloaded_passengers.append(p)
@@ -199,24 +193,24 @@ class ElevatorEnv:
             self.elevator.direction = 1
             if self.elevator.current_floor < self.num_floors - 1:
                 self.elevator.current_floor += 1
-            reward -= STATE_MOVE_PENALTY
+            reward -= config.STATE_MOVE_PENALTY
             # Penalize moving wrong way
             if self.calls_down[self.elevator.current_floor] or \
                any(p.get_direction() == -1 for p in self.elevator.passengers):
-                reward -= STATE_WRONG_DIR_PENALTY
+                reward -= config.STATE_WRONG_DIR_PENALTY
                 
         # --- 3. Update Timers and Penalties ---
         
         # Penalize passengers for riding
         for p in self.elevator.passengers:
             p.ride_time += 1
-            reward -= STATE_RIDE_TIME
+            reward -= config.STATE_RIDE_TIME
             
         # Penalize passengers for waiting
         for floor_queue in self.waiting_passengers:
             for p in floor_queue:
                 p.wait_time += 1
-                reward -= STATE_WAIT_TIME
+                reward -= config.STATE_WAIT_TIME
                 reward -= (p.wait_time ** 2) * 0.0001 #squared pen
 
         # Update total metrics
@@ -294,3 +288,4 @@ if __name__ == "__main__":
             env.render() # Render every 20 steps
             
         state = next_state
+
