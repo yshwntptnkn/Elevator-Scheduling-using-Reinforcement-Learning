@@ -1,20 +1,20 @@
 import numpy as np
-from elevator_env import ElevatorEnv
-from dqn_agent import DQNAgent
+from src import config
+from src.elevator_env import ElevatorEnv
+from src.dqn_agent import DQNAgent
 from collections import deque
 import matplotlib.pyplot as plt
 
 # --- Main Training Loop ---
 
 # --- 1. Initialize Environment and Agent ---
-env = ElevatorEnv(num_floors=10)
+env = ElevatorEnv(num_floors=config.NUM_FLOORS)
 state_size = env.get_state().shape[0] # Get state size from env
 action_size = 3 # 0:Down, 1:Stop, 2:Up
 
 agent = DQNAgent(state_size=state_size, action_size=action_size)
 
 # --- 2. Training Parameters ---
-NUM_EPISODES = 500  # Total number of "simulations" to run
 STEPS_PER_EPISODE = 2000 # Max steps per simulation
 
 # --- 3. Metrics Tracking ---
@@ -24,15 +24,15 @@ episode_wait_times = []
 episode_passengers_delivered = []
 rewards_window = deque(maxlen=100) # For a moving average
 
-print(f"Starting training for {NUM_EPISODES} episodes...")
+print(f"Starting training for {config.NUM_EPISODES} episodes...")
 print(f"State size: {state_size}, Action size: {action_size}")
 
 # --- 4. Run the Loop ---
-for episode in range(1, NUM_EPISODES + 1):
+for episode in range(1, config.NUM_EPISODES + 1):
     state = env.reset()
     total_reward = 0
     
-    for step in range(STEPS_PER_EPISODE):
+    for step in range(config.STEPS_PER_EPISODE):
         # 1. Agent chooses an action
         action = agent.choose_action(state)
         
@@ -90,3 +90,4 @@ plot_results(episode_wait_times, "Average Wait Time per Step")
 plot_results(episode_passengers_delivered, "Passengers Delivered per Episode")
 
 print("All plots saved. Your 'Results' are ready.")
+
