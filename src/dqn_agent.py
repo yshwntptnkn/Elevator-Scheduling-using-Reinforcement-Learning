@@ -4,7 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 import random
-import config
+from src import config
 from collections import deque
 
 # --- Hyperparameters ---
@@ -147,4 +147,5 @@ class DQNAgent:
     def save(self, filename):
         """Saves the trained network."""
         torch.save(self.q_network.state_dict(), filename)    
+
 
