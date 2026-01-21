@@ -2,7 +2,7 @@ import pygame
 import sys
 import torch
 import numpy as np
-import src.config
+from src import config
 from src.elevator_env import ElevatorEnv  # Import your environment
 from src.dqn_agent import DQNAgent        # Import your agent
 import os
@@ -281,5 +281,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
