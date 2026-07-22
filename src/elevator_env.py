@@ -133,11 +133,11 @@ class ElevatorEnv:
             self.elevator.direction = -1
             if self.elevator.current_floor > 0:
                 self.elevator.current_floor -= 1
-            reward -= config.STATE_MOVE_PENALTY
+            reward -= config.PENALTY_MOVE
             # Penalize moving wrong way
             if self.calls_up[self.elevator.current_floor] or \
                any(p.get_direction() == 1 for p in self.elevator.passengers):
-                reward -= config.STATE_WRONG_DIR_PENALTY
+                reward -= config.PENALTY_WRONG_DIR
 
         elif action == 1: # Stop and Load/Unload
             self.elevator.direction = 0 # Set to idle
@@ -146,7 +146,7 @@ class ElevatorEnv:
             unloaded_passengers = []
             for p in self.elevator.passengers:
                 if p.dest_floor == self.elevator.current_floor:
-                    reward += config.STATE_DROPOFF_REWARD # Big reward!
+                    reward += config.REWARD_DELIVERY # Big reward!
                     self.passengers_delivered += 1
                 else:
                     unloaded_passengers.append(p)
@@ -193,24 +193,24 @@ class ElevatorEnv:
             self.elevator.direction = 1
             if self.elevator.current_floor < self.num_floors - 1:
                 self.elevator.current_floor += 1
-            reward -= config.STATE_MOVE_PENALTY
+            reward -= config.PENALTY_MOVE
             # Penalize moving wrong way
             if self.calls_down[self.elevator.current_floor] or \
                any(p.get_direction() == -1 for p in self.elevator.passengers):
-                reward -= config.STATE_WRONG_DIR_PENALTY
+                reward -= config.PENALTY_WRONG_DIR
                 
         # --- 3. Update Timers and Penalties ---
         
         # Penalize passengers for riding
         for p in self.elevator.passengers:
             p.ride_time += 1
-            reward -= config.STATE_RIDE_TIME
+            reward -= config.PENALTY_WAIT_TIME
             
         # Penalize passengers for waiting
         for floor_queue in self.waiting_passengers:
             for p in floor_queue:
                 p.wait_time += 1
-                reward -= config.STATE_WAIT_TIME
+                reward -= config.PENALTY_WAIT_TIME
                 reward -= (p.wait_time ** 2) * 0.0001 #squared pen
 
         # Update total metrics
