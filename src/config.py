@@ -3,6 +3,8 @@ NUM_FLOORS = 10
 ELEVATOR_CAPACITY = 10
 NUM_EPISODES = 500
 STEPS_PER_EPISODE = 2000
+BUILDING_PANEL_WIDTH = 350
+ELEVATOR_SHAFT_WIDTH = 100
 
 # --- Agent / Training Hyperparameters ---
 BATCH_SIZE = 64         # Batch size for replay buffer sampling
